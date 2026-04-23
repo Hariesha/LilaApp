@@ -148,7 +148,7 @@ def make_journey_figure(df: pd.DataFrame, map_id: str, show_paths: bool) -> go.F
             borderwidth=1,
             font=dict(color="white", size=11),
             x=1.01,
-            y=0.75,
+            y=0.92,
             xanchor="left",
             yanchor="top",
         ),
