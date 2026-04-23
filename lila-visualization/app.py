@@ -355,36 +355,56 @@ def main():
     # ── Tab 3: Timeline ────────────────────────────────────────────────────────
     with tab_timeline:
         st.subheader("Match Timeline / Playback")
-        if match == "All":
-            st.info("Select a specific match from the sidebar to use the timeline playback.")
+
+        # Always show an in-tab match picker so users don't need the sidebar
+        available_timeline_matches = sorted(
+            df[df["map_id"] == map_id]["match_id_clean"].unique()
+        )
+        # If user already picked a match in the sidebar, pre-select it; else default to first
+        default_idx = (
+            available_timeline_matches.index(match)
+            if match != "All" and match in available_timeline_matches
+            else 0
+        )
+        timeline_match = st.selectbox(
+            "Select match to replay",
+            options=available_timeline_matches,
+            index=default_idx,
+            format_func=lambda m: m[:18] + "…",
+            key="timeline_match_picker",
+        )
+
+        match_df = df[
+            (df["match_id_clean"] == timeline_match) & (df["map_id"] == map_id)
+        ].copy()
+
+        if match_df.empty:
+            st.warning("No data for this match.")
         else:
-            match_df = df[
-                (df["match_id_clean"] == match) & (df["map_id"] == map_id)
-            ].copy()
-            if match_df.empty:
-                st.warning("No data for this match.")
-            else:
-                t_min = match_df["ts"].min()
-                t_max = match_df["ts"].max()
-                duration_s = int((t_max - t_min).total_seconds())
+            t_min = match_df["ts"].min()
+            t_max = match_df["ts"].max()
+            duration_s = int((t_max - t_min).total_seconds())
 
-                ts_cutoff_s = st.slider(
-                    "Time into match (seconds)",
-                    min_value=0,
-                    max_value=max(duration_s, 1),
-                    value=duration_s // 2,
-                    step=5,
-                )
+            col_a, col_b, col_c = st.columns(3)
+            col_a.metric("Match duration", f"{duration_s}s")
+            col_b.metric("Total events", f"{len(match_df):,}")
+            col_c.metric("Players in match", match_df["user_id"].nunique())
 
-                n_events = int(
-                    (
-                        (match_df["ts"] - t_min).dt.total_seconds() <= ts_cutoff_s
-                    ).sum()
-                )
-                st.caption(f"Showing {n_events:,} events up to {ts_cutoff_s}s into match")
+            ts_cutoff_s = st.slider(
+                "Time into match (seconds)",
+                min_value=0,
+                max_value=max(duration_s, 1),
+                value=max(duration_s, 1),
+                step=5,
+            )
 
-                fig = make_timeline_figure(match_df, map_id, ts_cutoff_s * 1000)
-                st.plotly_chart(fig, use_container_width=True)
+            n_events = int(
+                ((match_df["ts"] - t_min).dt.total_seconds() <= ts_cutoff_s).sum()
+            )
+            st.caption(f"Showing {n_events:,} / {len(match_df):,} events up to {ts_cutoff_s}s into match")
+
+            fig = make_timeline_figure(match_df, map_id, ts_cutoff_s * 1000)
+            st.plotly_chart(fig, use_container_width=True)
 
     # ── Tab 4: Stats ───────────────────────────────────────────────────────────
     with tab_stats:
