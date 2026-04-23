@@ -159,11 +159,11 @@ def make_journey_figure(df: pd.DataFrame, map_id: str, show_paths: bool) -> go.F
     return fig
 
 
-def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str, heatmap_opacity: float = 1.0) -> go.Figure:
+def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str) -> go.Figure:
     """
     Overlay a 2D density heatmap on the minimap.
     heatmap_type: 'traffic' | 'kills' | 'deaths' | 'loot'
-    heatmap_opacity: 0.0 (map only) → 1.0 (full heatmap)
+    Includes an in-chart eye button to toggle the heatmap on/off.
     """
     filters = {
         "traffic":  df["event"].isin(["Position", "BotPosition"]),
@@ -225,7 +225,7 @@ def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str, heatma
                 reversescale=False,
                 showscale=True,
                 ncontours=20,
-                opacity=heatmap_opacity,
+                opacity=0.7,
                 contours=dict(coloring="fill"),
                 line=dict(width=0),
                 name=heatmap_type.capitalize(),
@@ -236,9 +236,34 @@ def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str, heatma
     fig.update_yaxes(range=[1024, 0], showgrid=False, zeroline=False, visible=False)
     fig.update_layout(
         height=700,
-        margin=dict(l=0, r=0, t=0, b=0),
+        margin=dict(l=0, r=0, t=30, b=0),
         paper_bgcolor="black",
         plot_bgcolor="black",
+        updatemenus=[
+            dict(
+                type="buttons",
+                direction="left",
+                x=0.01,
+                y=1.04,
+                xanchor="left",
+                yanchor="bottom",
+                bgcolor="rgba(30,30,30,0.8)",
+                bordercolor="rgba(255,255,255,0.3)",
+                font=dict(color="white", size=12),
+                buttons=[
+                    dict(
+                        label="\U0001f441 Show Map",
+                        method="restyle",
+                        args=[{"visible": [False]}, [0]],  # hide heatmap trace
+                    ),
+                    dict(
+                        label="\U0001f525 Show Heatmap",
+                        method="restyle",
+                        args=[{"visible": [True]}, [0]],   # show heatmap trace
+                    ),
+                ],
+            )
+        ] if not sub.empty else [],
     )
     return fig
 
@@ -341,28 +366,17 @@ def main():
     # ── Tab 2: Heatmaps ────────────────────────────────────────────────────────
     with tab_heatmap:
         st.subheader(f"Heatmaps — {map_id}")
-        hm_col1, hm_col2 = st.columns([3, 1])
-        with hm_col1:
-            heatmap_type = st.radio(
-                "Heatmap type",
-                options=["traffic", "kills", "deaths", "loot"],
-                horizontal=True,
-                format_func=str.capitalize,
-            )
-        with hm_col2:
-            peek_map = st.toggle("👁 Peek at map", value=False,
-                                 help="Hide the heatmap overlay to see the original map")
-
-        heatmap_opacity = 0.0 if peek_map else st.slider(
-            "Heatmap opacity", min_value=0.0, max_value=1.0,
-            value=0.75, step=0.05,
-            help="Lower to reveal the map underneath the heatmap",
+        heatmap_type = st.radio(
+            "Heatmap type",
+            options=["traffic", "kills", "deaths", "loot"],
+            horizontal=True,
+            format_func=str.capitalize,
         )
-
+        st.caption("💡 Use the 👁 **Show Map** / 🔥 **Show Heatmap** buttons on the chart to peek at the map underneath.")
         if view.empty:
             st.warning("No data matches the current filters.")
         else:
-            fig = make_heatmap_figure(view, map_id, heatmap_type, heatmap_opacity)
+            fig = make_heatmap_figure(view, map_id, heatmap_type)
             st.plotly_chart(fig, width="stretch", key="heatmap_fig")
 
     # ── Tab 3: Timeline ────────────────────────────────────────────────────────
