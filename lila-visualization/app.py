@@ -308,12 +308,10 @@ def main():
 
     map_id, date, player_types, event_filter, show_paths, map_filtered = sidebar(df)
 
-    # Apply all filters — guard against empty multiselects
+    # Apply all filters — empty multiselect means nothing selected → show nothing
     view = map_filtered.copy()
-    if player_types:
-        view = view[view["player_type"].isin(player_types)]
-    if event_filter:
-        view = view[view["event"].isin(event_filter)]
+    view = view[view["player_type"].isin(player_types)]
+    view = view[view["event"].isin(event_filter)]
 
     # ── Header metrics ─────────────────────────────────────────────────────────
     col1, col2, col3, col4, col5 = st.columns(5)
