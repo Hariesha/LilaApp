@@ -335,7 +335,7 @@ def main():
             st.warning("No data matches the current filters.")
         else:
             fig = make_journey_figure(view, map_id, show_paths)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="journey_fig")
 
     # ── Tab 2: Heatmaps ────────────────────────────────────────────────────────
     with tab_heatmap:
@@ -350,7 +350,7 @@ def main():
             st.warning("No data matches the current filters.")
         else:
             fig = make_heatmap_figure(view, map_id, heatmap_type)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="heatmap_fig")
 
     # ── Tab 3: Timeline ────────────────────────────────────────────────────────
     with tab_timeline:
@@ -404,7 +404,7 @@ def main():
             st.caption(f"Showing {n_events:,} / {len(match_df):,} events up to {ts_cutoff_s}s into match")
 
             fig = make_timeline_figure(match_df, map_id, ts_cutoff_s * 1000)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="timeline_fig")
 
     # ── Tab 4: Stats ───────────────────────────────────────────────────────────
     with tab_stats:
@@ -425,7 +425,7 @@ def main():
                 template="plotly_dark",
             )
             fig_bar.update_layout(showlegend=False, margin=dict(t=10))
-            st.plotly_chart(fig_bar, use_container_width=True)
+            st.plotly_chart(fig_bar, use_container_width=True, key="stats_bar")
 
         with c2:
             st.markdown("#### Events per day")
@@ -440,7 +440,7 @@ def main():
                 template="plotly_dark",
             )
             fig_line.update_layout(margin=dict(t=10))
-            st.plotly_chart(fig_line, use_container_width=True)
+            st.plotly_chart(fig_line, use_container_width=True, key="stats_line")
 
         st.markdown("#### Top players by kills")
         kills_df = df[df["event"].isin(["Kill", "BotKill"])].copy()
@@ -466,7 +466,7 @@ def main():
             color_discrete_map={"Human": "#3b82f6", "Bot": "#6b7280"},
             template="plotly_dark",
         )
-        st.plotly_chart(fig_pie, use_container_width=True)
+        st.plotly_chart(fig_pie, use_container_width=True, key="stats_pie")
 
 
 if __name__ == "__main__":
