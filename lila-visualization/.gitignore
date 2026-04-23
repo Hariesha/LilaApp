@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.streamlit/secrets.toml
+# Exclude raw data from git (large files) – use git-lfs or upload separately
+# player_data/
