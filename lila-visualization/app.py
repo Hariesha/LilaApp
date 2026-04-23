@@ -72,9 +72,12 @@ EVENT_SIZES = {
 
 @st.cache_data(show_spinner=False)
 def load_minimap_b64(map_id: str) -> str:
-    """Return a base64-encoded data URI for the minimap image."""
+    """Return a base64-encoded data URI for the minimap image (resized to 1024x1024)."""
     path = os.path.join(MINIMAP_DIR, MINIMAP_FILES[map_id])
     img = Image.open(path).convert("RGBA")
+    # Resize to 1024x1024 to match IMAGE_SIZE and keep base64 payloads small
+    if img.size != (1024, 1024):
+        img = img.resize((1024, 1024), Image.LANCZOS)
     buf = BytesIO()
     img.save(buf, format="PNG")
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
@@ -334,7 +337,7 @@ def main():
             st.warning("No data matches the current filters.")
         else:
             fig = make_journey_figure(view, map_id, show_paths)
-            st.plotly_chart(fig, use_container_width=True, key="journey_fig")
+            st.plotly_chart(fig, width="stretch", key="journey_fig")
 
     # ── Tab 2: Heatmaps ────────────────────────────────────────────────────────
     with tab_heatmap:
@@ -349,7 +352,7 @@ def main():
             st.warning("No data matches the current filters.")
         else:
             fig = make_heatmap_figure(view, map_id, heatmap_type)
-            st.plotly_chart(fig, use_container_width=True, key="heatmap_fig")
+            st.plotly_chart(fig, width="stretch", key="heatmap_fig")
 
     # ── Tab 3: Timeline ────────────────────────────────────────────────────────
     with tab_timeline:
@@ -407,7 +410,7 @@ def main():
             st.caption(f"Showing {n_events:,} / {len(match_df):,} events up to {ts_cutoff_s_display}s into match")
 
             fig = make_timeline_figure(match_df, map_id, ts_cutoff_ms)
-            st.plotly_chart(fig, use_container_width=True, key="timeline_fig")
+            st.plotly_chart(fig, width="stretch", key="timeline_fig")
 
     # ── Tab 4: Stats ───────────────────────────────────────────────────────────
     with tab_stats:
@@ -428,7 +431,7 @@ def main():
                 template="plotly_dark",
             )
             fig_bar.update_layout(showlegend=False, margin=dict(t=10))
-            st.plotly_chart(fig_bar, use_container_width=True, key="stats_bar")
+            st.plotly_chart(fig_bar, width="stretch", key="stats_bar")
 
         with c2:
             st.markdown("#### Events per day")
@@ -443,7 +446,7 @@ def main():
                 template="plotly_dark",
             )
             fig_line.update_layout(margin=dict(t=10))
-            st.plotly_chart(fig_line, use_container_width=True, key="stats_line")
+            st.plotly_chart(fig_line, width="stretch", key="stats_line")
 
         st.markdown("#### Top players by kills")
         kills_df = df[df["event"].isin(["Kill", "BotKill"])].copy()
@@ -458,7 +461,7 @@ def main():
         )
         top_killers["total_kills"] = top_killers.get("Kill", 0) + top_killers.get("BotKill", 0)
         top_killers = top_killers.sort_values("total_kills", ascending=False).head(15)
-        st.dataframe(top_killers, use_container_width=True)
+        st.dataframe(top_killers, width="stretch")
 
         st.markdown("#### Human vs Bot split")
         split = view["player_type"].value_counts().reset_index()
@@ -469,7 +472,7 @@ def main():
             color_discrete_map={"Human": "#3b82f6", "Bot": "#6b7280"},
             template="plotly_dark",
         )
-        st.plotly_chart(fig_pie, use_container_width=True, key="stats_pie")
+        st.plotly_chart(fig_pie, width="stretch", key="stats_pie")
 
 
 if __name__ == "__main__":
