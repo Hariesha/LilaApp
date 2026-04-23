@@ -147,10 +147,10 @@ def make_journey_figure(df: pd.DataFrame, map_id: str, show_paths: bool) -> go.F
             bordercolor="rgba(255,255,255,0.2)",
             borderwidth=1,
             font=dict(color="white", size=11),
-            x=0.01,
-            y=0.01,
+            x=1.01,
+            y=0.75,
             xanchor="left",
-            yanchor="bottom",
+            yanchor="top",
         ),
     )
     return fig
