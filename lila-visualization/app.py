@@ -174,16 +174,37 @@ def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str) -> go.
             x=0, y=0,
             sizex=1024, sizey=1024,
             sizing="stretch",
-            opacity=0.5,
+            opacity=1.0,
             layer="below",
         )
     )
 
+    # Custom colorscales: low values fully transparent → high values opaque
     colorscales = {
-        "traffic": "Blues",
-        "kills":   "Reds",
-        "deaths":  "Oranges",
-        "loot":    "Greens",
+        "traffic": [
+            [0.0, "rgba(59,  130, 246, 0.0)"],
+            [0.3, "rgba(59,  130, 246, 0.25)"],
+            [0.6, "rgba(37,  99,  235, 0.6)"],
+            [1.0, "rgba(29,  78,  216, 0.92)"],
+        ],
+        "kills": [
+            [0.0, "rgba(239, 68,  68,  0.0)"],
+            [0.3, "rgba(239, 68,  68,  0.25)"],
+            [0.6, "rgba(220, 38,  38,  0.6)"],
+            [1.0, "rgba(185, 28,  28,  0.92)"],
+        ],
+        "deaths": [
+            [0.0, "rgba(249, 115, 22,  0.0)"],
+            [0.3, "rgba(249, 115, 22,  0.25)"],
+            [0.6, "rgba(234, 88,  12,  0.6)"],
+            [1.0, "rgba(194, 65,  12,  0.92)"],
+        ],
+        "loot": [
+            [0.0, "rgba(34,  197, 94,  0.0)"],
+            [0.3, "rgba(34,  197, 94,  0.25)"],
+            [0.6, "rgba(22,  163, 74,  0.6)"],
+            [1.0, "rgba(21,  128, 61,  0.92)"],
+        ],
     }
 
     if not sub.empty:
@@ -195,7 +216,7 @@ def make_heatmap_figure(df: pd.DataFrame, map_id: str, heatmap_type: str) -> go.
                 reversescale=False,
                 showscale=True,
                 ncontours=20,
-                opacity=0.7,
+                opacity=1.0,
                 contours=dict(coloring="fill"),
                 line=dict(width=0),
                 name=heatmap_type.capitalize(),
