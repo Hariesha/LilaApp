@@ -461,6 +461,8 @@ def main():
             .unstack(fill_value=0)
             .reset_index()
         )
+        top_killers.columns.name = None  # remove multi-level column name
+        top_killers = top_killers.rename(columns={"user_id": "Player"})
         top_killers["total_kills"] = top_killers.get("Kill", 0) + top_killers.get("BotKill", 0)
         top_killers = top_killers.sort_values("total_kills", ascending=False).head(15)
         st.dataframe(top_killers, width="stretch")
