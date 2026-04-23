@@ -465,7 +465,7 @@ def main():
         top_killers = top_killers.rename(columns={"user_id": "Player"})
         top_killers["total_kills"] = top_killers.get("Kill", 0) + top_killers.get("BotKill", 0)
         top_killers = top_killers.sort_values("total_kills", ascending=False).head(15)
-        st.dataframe(top_killers, width="stretch")
+        st.dataframe(top_killers, width="stretch", hide_index=True)
 
         st.markdown("#### Human vs Bot split")
         split = view["player_type"].value_counts().reset_index()
