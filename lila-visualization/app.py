@@ -305,10 +305,12 @@ def main():
 
     map_id, date, player_types, event_filter, show_paths, map_filtered = sidebar(df)
 
-    # Apply all filters
+    # Apply all filters — guard against empty multiselects
     view = map_filtered.copy()
-    view = view[view["player_type"].isin(player_types)]
-    view = view[view["event"].isin(event_filter)]
+    if player_types:
+        view = view[view["player_type"].isin(player_types)]
+    if event_filter:
+        view = view[view["event"].isin(event_filter)]
 
     # ── Header metrics ─────────────────────────────────────────────────────────
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -370,8 +372,10 @@ def main():
             (df["match_id_clean"] == timeline_match) & (df["map_id"] == map_id)
         ].copy()
         # Apply the same player type + event filters from the sidebar
-        match_df = match_df[match_df["player_type"].isin(player_types)]
-        match_df = match_df[match_df["event"].isin(event_filter)]
+        if player_types:
+            match_df = match_df[match_df["player_type"].isin(player_types)]
+        if event_filter:
+            match_df = match_df[match_df["event"].isin(event_filter)]
 
         if match_df.empty:
             st.warning("No data for this match.")
