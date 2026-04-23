@@ -24,6 +24,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Hide anchor links on headings
+st.html("""
+<style>
+    h1 > a, h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
+        display: none !important;
+    }
+</style>
+""")
+
 # ── Paths ──────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MINIMAP_DIR = os.path.join(BASE_DIR, "..", "player_data", "minimaps")
