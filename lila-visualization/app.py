@@ -475,11 +475,33 @@ def main():
             .reset_index()
         )
         top_killers.columns.name = None  # remove multi-level column name
-        top_killers = top_killers.rename(columns={"user_id": "Player"})
-        top_killers["total_kills"] = top_killers.get("Kill", 0) + top_killers.get("BotKill", 0)
-        top_killers = top_killers.sort_values("total_kills", ascending=False).head(15)
+        top_killers = top_killers.rename(columns={
+            "user_id": "Player",
+            "BotKill": "Bot Kill",
+            "total_kills": "Total Kills",
+        })
+        # Rename any remaining underscored columns
+        top_killers.columns = [c.replace("_", " ").title() if c != "Player" else c for c in top_killers.columns]
+        top_killers["Total Kills"] = top_killers.get("Kill", 0) + top_killers.get("Bot Kill", 0)
+        top_killers = top_killers.sort_values("Total Kills", ascending=False).head(15)
         top_killers = top_killers.set_index("Player")
-        st.dataframe(top_killers, width="stretch")
+
+        # Center-align numeric columns, left-align Player (index)
+        numeric_cols = [c for c in top_killers.columns]
+        col_config = {
+            col: st.column_config.NumberColumn(col, help=None)
+            for col in numeric_cols
+        }
+        st.dataframe(
+            top_killers.style
+                .set_properties(subset=numeric_cols, **{"text-align": "center"})
+                .set_table_styles([
+                    {"selector": "th", "props": [("text-align", "center")]},
+                ]),
+            width=None,
+            use_container_width=True,
+            column_config=col_config,
+        )
 
         st.markdown("#### Human vs Bot split")
         split = view["player_type"].value_counts().reset_index()
