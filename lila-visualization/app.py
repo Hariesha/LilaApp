@@ -352,12 +352,8 @@ def main():
         available_timeline_matches = sorted(
             df[df["map_id"] == map_id]["match_id_clean"].unique()
         )
-        # If user already picked a match in the sidebar, pre-select it; else default to first
-        default_idx = (
-            available_timeline_matches.index(match)
-            if match != "All" and match in available_timeline_matches
-            else 0
-        )
+        # Default to first match in the list
+        default_idx = 0
         timeline_match = st.selectbox(
             "Select match to replay",
             options=available_timeline_matches,
