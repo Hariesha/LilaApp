@@ -266,7 +266,11 @@ def sidebar(df: pd.DataFrame):
     )
 
     available_dates = sorted(df[df["map_id"] == map_id]["date"].unique())
-    date = st.sidebar.selectbox("Date", options=["All"] + available_dates)
+    date = st.sidebar.selectbox(
+        "Date",
+        options=["All"] + available_dates,
+        format_func=lambda d: d.replace("_", " "),
+    )
 
     filtered = df[df["map_id"] == map_id]
     if date != "All":
