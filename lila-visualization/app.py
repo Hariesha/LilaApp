@@ -369,6 +369,9 @@ def main():
         match_df = df[
             (df["match_id_clean"] == timeline_match) & (df["map_id"] == map_id)
         ].copy()
+        # Apply the same player type + event filters from the sidebar
+        match_df = match_df[match_df["player_type"].isin(player_types)]
+        match_df = match_df[match_df["event"].isin(event_filter)]
 
         if match_df.empty:
             st.warning("No data for this match.")
