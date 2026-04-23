@@ -318,7 +318,7 @@ def main():
     col1.metric("Events shown", f"{len(view):,}")
     col2.metric("Unique players", view["user_id"].nunique())
     col3.metric("Matches", view["match_id"].nunique())
-    col4.metric("Kills", int((view["event"] == "Kill").sum()))
+    col4.metric("Kills", int(view["event"].isin(["Kill", "BotKill"]).sum()))
     col5.metric("Loot pickups", int((view["event"] == "Loot").sum()))
 
     st.divider()
