@@ -264,12 +264,6 @@ def sidebar(df: pd.DataFrame):
     if date != "All":
         filtered = filtered[filtered["date"] == date]
 
-    available_matches = sorted(filtered["match_id_clean"].unique())
-    match = st.sidebar.selectbox(
-        "Match",
-        options=["All"] + available_matches,
-        format_func=lambda m: m[:8] + "…" if m != "All" else "All",
-    )
 
     player_type = st.sidebar.multiselect(
         "Player type",
@@ -296,7 +290,7 @@ def sidebar(df: pd.DataFrame):
         unsafe_allow_html=True,
     )
 
-    return map_id, date, match, player_type, event_filter, show_paths, filtered
+    return map_id, date, player_type, event_filter, show_paths, filtered
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -304,12 +298,10 @@ def sidebar(df: pd.DataFrame):
 def main():
     df = load_all_data()
 
-    map_id, date, match, player_types, event_filter, show_paths, map_filtered = sidebar(df)
+    map_id, date, player_types, event_filter, show_paths, map_filtered = sidebar(df)
 
     # Apply all filters
     view = map_filtered.copy()
-    if match != "All":
-        view = view[view["match_id_clean"] == match]
     view = view[view["player_type"].isin(player_types)]
     view = view[view["event"].isin(event_filter)]
 
