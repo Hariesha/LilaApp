@@ -144,8 +144,13 @@ def make_journey_figure(df: pd.DataFrame, map_id: str, show_paths: bool) -> go.F
         plot_bgcolor="black",
         legend=dict(
             bgcolor="rgba(0,0,0,0.7)",
-            font=dict(color="white"),
-            x=1.01, y=1,
+            bordercolor="rgba(255,255,255,0.2)",
+            borderwidth=1,
+            font=dict(color="white", size=11),
+            x=0.01,
+            y=0.01,
+            xanchor="left",
+            yanchor="bottom",
         ),
     )
     return fig
