@@ -358,7 +358,6 @@ def main():
             "Select match to replay",
             options=available_timeline_matches,
             index=default_idx,
-            format_func=lambda m: m[:18] + "…",
             key="timeline_match_picker",
         )
 
@@ -371,27 +370,31 @@ def main():
         else:
             t_min = match_df["ts"].min()
             t_max = match_df["ts"].max()
-            duration_s = int((t_max - t_min).total_seconds())
+            # Use milliseconds to avoid int() truncating sub-second durations
+            duration_ms = int((t_max - t_min).total_seconds() * 1000)
+            duration_s_display = round((t_max - t_min).total_seconds(), 1)
 
             col_a, col_b, col_c = st.columns(3)
-            col_a.metric("Match duration", f"{duration_s}s")
+            col_a.metric("Match duration", f"{duration_s_display}s")
             col_b.metric("Total events", f"{len(match_df):,}")
-            col_c.metric("Players in match", match_df["user_id"].nunique())
+            col_c.metric("Players (files)", match_df["user_id"].nunique())
 
-            ts_cutoff_s = st.slider(
+            ts_cutoff_ms = st.slider(
                 "Time into match (seconds)",
                 min_value=0,
-                max_value=max(duration_s, 1),
-                value=max(duration_s, 1),
-                step=5,
+                max_value=max(duration_ms, 1),
+                value=max(duration_ms, 1),
+                step=max(duration_ms // 60, 1),
+                format="%d ms",
             )
+            ts_cutoff_s_display = round(ts_cutoff_ms / 1000, 1)
 
             n_events = int(
-                ((match_df["ts"] - t_min).dt.total_seconds() <= ts_cutoff_s).sum()
+                ((match_df["ts"] - t_min).dt.total_seconds() * 1000 <= ts_cutoff_ms).sum()
             )
-            st.caption(f"Showing {n_events:,} / {len(match_df):,} events up to {ts_cutoff_s}s into match")
+            st.caption(f"Showing {n_events:,} / {len(match_df):,} events up to {ts_cutoff_s_display}s into match")
 
-            fig = make_timeline_figure(match_df, map_id, ts_cutoff_s * 1000)
+            fig = make_timeline_figure(match_df, map_id, ts_cutoff_ms)
             st.plotly_chart(fig, use_container_width=True, key="timeline_fig")
 
     # ── Tab 4: Stats ───────────────────────────────────────────────────────────
