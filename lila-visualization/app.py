@@ -498,8 +498,7 @@ def main():
                 .set_table_styles([
                     {"selector": "th", "props": [("text-align", "center")]},
                 ]),
-            width=None,
-            use_container_width=True,
+            width="stretch",
             column_config=col_config,
         )
 
