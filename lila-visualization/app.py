@@ -27,7 +27,11 @@ st.set_page_config(
 # Hide anchor links on headings
 st.html("""
 <style>
-    h1 > a, h2 > a, h3 > a, h4 > a, h5 > a, h6 > a {
+    /* Hide Streamlit heading anchor/link icons */
+    a.headerlink,
+    .stMarkdown a[href^="#"],
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+    [data-testid="stHeaderActionElements"] {
         display: none !important;
     }
 </style>
