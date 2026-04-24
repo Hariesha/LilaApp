@@ -19,13 +19,14 @@ from coordinate_utils import add_pixel_coords_vectorized
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "..", "player_data")
 
-DAYS = [
-    "February_10",
-    "February_11",
-    "February_12",
-    "February_13",
-    "February_14",
-]
+def _discover_days() -> list[str]:
+    """Dynamically find all date folders under the player_data directory."""
+    if not os.path.isdir(DATA_DIR):
+        return []
+    return sorted(
+        d for d in os.listdir(DATA_DIR)
+        if os.path.isdir(os.path.join(DATA_DIR, d)) and d not in {"minimaps", "__pycache__"}
+    )
 
 _UUID_RE = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
@@ -42,7 +43,7 @@ def _is_bot(user_id: str) -> bool:
 def load_all_data() -> pd.DataFrame:
     """Load all parquet files across all days into a single DataFrame."""
     frames = []
-    for day in DAYS:
+    for day in _discover_days():
         folder = os.path.join(DATA_DIR, day)
         if not os.path.isdir(folder):
             continue
