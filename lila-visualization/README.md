@@ -2,7 +2,7 @@
 
 A web-based tool for Level Designers to explore player behaviour across LILA BLACK's three maps using 5 days of production telemetry data.
 
-**Live deployment:** _[Deploy URL — add after Streamlit Cloud deployment]_
+**Live deployment:** [https://lilavisualization.streamlit.app/](https://lilavisualization.streamlit.app/)
 
 ---
 
