@@ -41,14 +41,7 @@ A web-based tool for Level Designers to explore player behaviour across LILA BLA
 pip install -r requirements.txt
 ```
 
-### Run locally
-
-```bash
-cd lila-visualization
-streamlit run app.py
-```
-
-The app will open at `http://localhost:8501`.
+The app will open at `https://lilavisualization.streamlit.app/`.
 
 ---
 
@@ -95,15 +88,6 @@ None required for local use. For custom data paths:
 | Variable | Default | Description |
 |---|---|---|
 | `LILA_DATA_DIR` | `../player_data` | Absolute path to the player_data folder |
-
----
-
-## Running Tests
-
-```bash
-pip install pytest
-pytest tests/
-```
 
 ---
 
