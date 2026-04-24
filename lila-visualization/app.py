@@ -375,7 +375,7 @@ def main():
 
         # Always show an in-tab match picker so users don't need the sidebar
         available_timeline_matches = sorted(
-            df[df["map_id"] == map_id]["match_id_clean"].unique()
+            map_filtered[map_filtered["map_id"] == map_id]["match_id_clean"].unique()
         )
         # Default to first match in the list
         default_idx = 0
@@ -386,14 +386,12 @@ def main():
             key="timeline_match_picker",
         )
 
-        match_df = df[
-            (df["match_id_clean"] == timeline_match) & (df["map_id"] == map_id)
+        match_df = map_filtered[
+            (map_filtered["match_id_clean"] == timeline_match) & (map_filtered["map_id"] == map_id)
         ].copy()
         # Apply the same player type + event filters from the sidebar
-        if player_types:
-            match_df = match_df[match_df["player_type"].isin(player_types)]
-        if event_filter:
-            match_df = match_df[match_df["event"].isin(event_filter)]
+        match_df = match_df[match_df["player_type"].isin(player_types)]
+        match_df = match_df[match_df["event"].isin(event_filter)]
 
         if match_df.empty:
             st.warning("No data for this match.")
@@ -464,43 +462,43 @@ def main():
             st.plotly_chart(fig_line, width="stretch", key="stats_line")
 
         st.markdown("#### Top players by kills")
-        kills_df = df[df["event"].isin(["Kill", "BotKill"])].copy()
-        kills_df = kills_df[kills_df["map_id"] == map_id]
-        if date != "All":
-            kills_df = kills_df[kills_df["date"] == date]
-        top_killers = (
-            kills_df.groupby(["user_id", "event"])
-            .size()
-            .unstack(fill_value=0)
-            .reset_index()
-        )
-        top_killers.columns.name = None  # remove multi-level column name
-        top_killers = top_killers.rename(columns={
-            "user_id": "Player",
-            "BotKill": "Bot Kill",
-            "total_kills": "Total Kills",
-        })
-        # Rename any remaining underscored columns
-        top_killers.columns = [c.replace("_", " ").title() if c != "Player" else c for c in top_killers.columns]
-        top_killers["Total Kills"] = top_killers.get("Kill", 0) + top_killers.get("Bot Kill", 0)
-        top_killers = top_killers.sort_values("Total Kills", ascending=False).head(15)
-        top_killers = top_killers.set_index("Player")
+        kills_df = view[view["event"].isin(["Kill", "BotKill"])].copy()
+        if kills_df.empty:
+            st.info("No kill events match the current filters.")
+        else:
+            top_killers = (
+                kills_df.groupby(["user_id", "event"])
+                .size()
+                .unstack(fill_value=0)
+                .reset_index()
+            )
+            top_killers.columns.name = None  # remove multi-level column name
+            top_killers = top_killers.rename(columns={
+                "user_id": "Player",
+                "BotKill": "Bot Kill",
+                "total_kills": "Total Kills",
+            })
+            # Rename any remaining underscored columns
+            top_killers.columns = [c.replace("_", " ").title() if c != "Player" else c for c in top_killers.columns]
+            top_killers["Total Kills"] = top_killers.get("Kill", 0) + top_killers.get("Bot Kill", 0)
+            top_killers = top_killers.sort_values("Total Kills", ascending=False).head(15)
+            top_killers = top_killers.set_index("Player")
 
-        # Center-align numeric columns, left-align Player (index)
-        numeric_cols = [c for c in top_killers.columns]
-        col_config = {
-            col: st.column_config.NumberColumn(col, help=None)
-            for col in numeric_cols
-        }
-        st.dataframe(
-            top_killers.style
-                .set_properties(subset=numeric_cols, **{"text-align": "center"})
-                .set_table_styles([
-                    {"selector": "th", "props": [("text-align", "center")]},
-                ]),
-            width="stretch",
-            column_config=col_config,
-        )
+            # Center-align numeric columns, left-align Player (index)
+            numeric_cols = [c for c in top_killers.columns]
+            col_config = {
+                col: st.column_config.NumberColumn(col, help=None)
+                for col in numeric_cols
+            }
+            st.dataframe(
+                top_killers.style
+                    .set_properties(subset=numeric_cols, **{"text-align": "center"})
+                    .set_table_styles([
+                        {"selector": "th", "props": [("text-align", "center")]},
+                    ]),
+                width="stretch",
+                column_config=col_config,
+            )
 
         st.markdown("#### Human vs Bot split")
         split = view["player_type"].value_counts().reset_index()
