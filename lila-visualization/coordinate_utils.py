@@ -12,16 +12,12 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-_CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "map_config.json")
-
-
-def _load_map_config() -> dict:
-    """Load map configuration from map_config.json."""
-    with open(_CONFIG_PATH, "r") as f:
-        return json.load(f)
-
-
-MAP_CONFIG = _load_map_config()
+# Map configuration from the README
+MAP_CONFIG = {
+    "AmbroseValley": {"scale": 900,  "origin_x": -370, "origin_z": -473},
+    "GrandRift":     {"scale": 581,  "origin_x": -290, "origin_z": -290},
+    "Lockdown":      {"scale": 1000, "origin_x": -500, "origin_z": -500},
+}
 
 IMAGE_SIZE = 1024  # minimap images are 1024x1024
 
