@@ -406,7 +406,7 @@ def main():
             col_a, col_b, col_c = st.columns(3)
             col_a.metric("Match duration", f"{duration_s_display}s")
             col_b.metric("Total events", f"{len(match_df):,}")
-            col_c.metric("Players (files)", match_df["user_id"].nunique())
+            col_c.metric("Players", match_df["user_id"].nunique())
 
             ts_cutoff_ms = st.slider(
                 "Time into match (seconds)",
