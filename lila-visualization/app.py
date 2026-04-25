@@ -321,53 +321,8 @@ def sidebar(df: pd.DataFrame):
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main():
-    loading_placeholder = st.empty()
-    with loading_placeholder.container():
-        st.markdown(
-            """
-            <div style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 80vh;
-                gap: 1.5rem;
-            ">
-                <div style="font-size: 3rem;">🎮</div>
-                <div style="font-size: 1.6rem; font-weight: 700; color: white;">
-                    LILA BLACK
-                </div>
-                <div style="font-size: 1rem; color: #9ca3af;">
-                    Loading match data, please wait…
-                </div>
-                <div style="
-                    width: 220px;
-                    height: 4px;
-                    background: #1f2937;
-                    border-radius: 9999px;
-                    overflow: hidden;
-                ">
-                    <div style="
-                        width: 40%;
-                        height: 100%;
-                        background: linear-gradient(90deg, #3b82f6, #6366f1);
-                        border-radius: 9999px;
-                        animation: slide 1.4s ease-in-out infinite;
-                    "></div>
-                </div>
-            </div>
-            <style>
-                @keyframes slide {
-                    0%   { margin-left: -40%; }
-                    100% { margin-left: 100%; }
-                }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    df = load_all_data()
-    loading_placeholder.empty()
+    with st.spinner("🎮 LILA BLACK — Loading match data, please wait…"):
+        df = load_all_data()
 
     map_id, date, player_types, event_filter, show_paths, map_filtered = sidebar(df)
 

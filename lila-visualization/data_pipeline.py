@@ -39,7 +39,7 @@ def _is_bot(user_id: str) -> bool:
     return not bool(_UUID_RE.match(user_id))
 
 
-@st.cache_data(show_spinner="Loading match data…")
+@st.cache_data(show_spinner=False)
 def load_all_data() -> pd.DataFrame:
     """Load all parquet files across all days into a single DataFrame."""
     frames = []
