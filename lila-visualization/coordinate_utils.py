@@ -5,7 +5,6 @@ to minimap pixel coordinates.
 Minimap images are 1024x1024 px. Image origin is top-left (Y flipped).
 """
 
-from typing import Tuple
 import numpy as np
 import pandas as pd
 
@@ -17,29 +16,6 @@ MAP_CONFIG = {
 }
 
 IMAGE_SIZE = 1024  # minimap images are 1024x1024
-
-
-def world_to_pixel(x: float, z: float, map_id: str) -> Tuple[float, float]:
-    """Convert a single world (x, z) pair to minimap (pixel_x, pixel_y)."""
-    cfg = MAP_CONFIG[map_id]
-    u = (x - cfg["origin_x"]) / cfg["scale"]
-    v = (z - cfg["origin_z"]) / cfg["scale"]
-    pixel_x = u * IMAGE_SIZE
-    pixel_y = (1 - v) * IMAGE_SIZE  # Y axis is flipped in image space
-    return pixel_x, pixel_y
-
-
-def add_pixel_coords(df: pd.DataFrame) -> pd.DataFrame:
-    """Add pixel_x and pixel_y columns to a DataFrame that has x, z, and map_id."""
-    px_list, py_list = [], []
-    for _, row in df.iterrows():
-        px, py = world_to_pixel(row["x"], row["z"], row["map_id"])
-        px_list.append(px)
-        py_list.append(py)
-    df = df.copy()
-    df["pixel_x"] = px_list
-    df["pixel_y"] = py_list
-    return df
 
 
 def add_pixel_coords_vectorized(df: pd.DataFrame) -> pd.DataFrame:

@@ -7,7 +7,6 @@ import os
 import base64
 from io import BytesIO
 
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
