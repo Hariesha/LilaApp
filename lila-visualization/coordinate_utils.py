@@ -3,11 +3,8 @@ Coordinate utilities for mapping LILA BLACK world coordinates
 to minimap pixel coordinates.
 
 Minimap images are 1024x1024 px. Image origin is top-left (Y flipped).
-Map parameters are loaded dynamically from map_config.json.
 """
 
-import os
-import json
 from typing import Tuple
 import numpy as np
 import pandas as pd
