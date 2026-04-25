@@ -10,6 +10,7 @@ Produces a single clean DataFrame with added columns:
 
 import os
 import re
+import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
 import streamlit as st
@@ -50,7 +51,17 @@ def load_all_data() -> pd.DataFrame:
         for fname in os.listdir(folder):
             fpath = os.path.join(folder, fname)
             try:
-                df = pq.read_table(fpath).to_pandas()
+                table = pq.read_table(fpath)
+                # Cast ts to int64 before converting to pandas so that
+                # PyArrow's automatic timestamp unit detection (ms vs µs vs ns)
+                # doesn't corrupt the values — we always treat ts as ms.
+                if pa.types.is_timestamp(table.schema.field("ts").type):
+                    table = table.set_column(
+                        table.schema.get_field_index("ts"),
+                        "ts",
+                        table["ts"].cast(pa.int64()),
+                    )
+                df = table.to_pandas()
             except Exception:
                 continue
 
@@ -72,6 +83,12 @@ def load_all_data() -> pd.DataFrame:
         raise RuntimeError(f"No data files found under {DATA_DIR}")
 
     all_df = pd.concat(frames, ignore_index=True)
+
+    # ts contains milliseconds from game engine epoch.
+    # We cast to int64 in PyArrow above to prevent unit misinterpretation;
+    # convert to proper datetime here.
+    if not pd.api.types.is_datetime64_any_dtype(all_df["ts"]):
+        all_df["ts"] = pd.to_datetime(all_df["ts"], unit="ms")
 
     # Strip .nakama-0 suffix from match_id for cleaner display
     all_df["match_id_clean"] = all_df["match_id"].str.replace(
