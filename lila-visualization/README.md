@@ -33,7 +33,7 @@ A web-based tool for Level Designers to explore player behaviour across LILA BLA
 ### Prerequisites
 
 - Python 3.11+
-- The `player_data/` folder (with `February_10` – `February_14` subfolders and `minimaps/`) must be present as a sibling of this `lila-visualization/` folder.
+- The `player_data/` folder (with one or more date subfolders and `minimaps/`) must be present as a sibling of this `lila-visualization/` folder. Date folders are discovered automatically — no code changes needed when new days are added.
 
 ### Install dependencies
 
@@ -41,7 +41,13 @@ A web-based tool for Level Designers to explore player behaviour across LILA BLA
 pip install -r requirements.txt
 ```
 
-The app will open at `https://lilavisualization.streamlit.app/`.
+### Run locally
+
+```bash
+streamlit run app.py
+```
+
+The app will open at `http://localhost:8501`.
 
 ---
 
@@ -81,23 +87,12 @@ player_data/                ← Raw data (sibling folder)
 
 ---
 
-## Environment Variables
-
-None required for local use. For custom data paths:
-
-| Variable | Default | Description |
-|---|---|---|
-| `LILA_DATA_DIR` | `../player_data` | Absolute path to the player_data folder |
-
----
-
 ## Feature Walkthrough
 
 ### Sidebar Filters
 Every tab is controlled by the sidebar on the left:
 - **Map** — switch between AmbroseValley, GrandRift, Lockdown; the minimap image and data update instantly.
-- **Date** — narrow to a single day (Feb 10–14) or keep "All" for the full dataset.
-- **Match** — pick a specific match UUID or leave "All" to see all matches on the selected map/day.
+- **Date** — narrow to a single day or keep "All" for the full dataset.
 - **Player type** — toggle Humans, Bots, or both.
 - **Event types** — individually toggle any of the 8 event types (Position, BotPosition, Kill, Killed, BotKill, BotKilled, KilledByStorm, Loot).
 - **Show movement paths** — toggle the line trails connecting position events.
