@@ -10,6 +10,14 @@ Produces a single clean DataFrame with added columns:
 
 import os
 import re
+import sys
+
+# Ensure the lila-visualization directory is always on sys.path so that
+# coordinate_utils resolves correctly on Streamlit Cloud during hot-reloads.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+
 import pyarrow as pa
 import pandas as pd
 import pyarrow.parquet as pq
