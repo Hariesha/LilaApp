@@ -304,16 +304,6 @@ def sidebar(df: pd.DataFrame):
 
     show_paths = st.sidebar.toggle("Show movement paths", value=True)
 
-    st.sidebar.divider()
-    st.sidebar.markdown(
-        "**Legend**\n"
-        + "\n".join(
-            f"- <span style='color:{v}'>■</span> {k}"
-            for k, v in EVENT_COLORS.items()
-        ),
-        unsafe_allow_html=True,
-    )
-
     return map_id, date, player_type, event_filter, show_paths, filtered
 
 
