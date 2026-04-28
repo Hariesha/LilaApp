@@ -490,7 +490,7 @@ def main():
                 column_config=col_config,
             )
 
-        st.markdown("#### Human vs Bot split")
+        st.markdown("#### Human vs Bot — Event Volume")
         split = view["player_type"].value_counts().reset_index()
         split.columns = ["Type", "Events"]
         fig_pie = px.pie(
